@@ -69,14 +69,23 @@ foreach ($apiArray as $apiValue) {
 
 // Check the status of a request for each URL
 foreach ($urlArray as $urlToVisit) {
-  echo $urlToVisit . "\n";
-  //$headerArray = get_headers($urlToVisit, 1, $context);
-    //if(strpos($headerArray[0], '200') === false) { 
-    //  echo "Failed request for " . $urlToVisit . $headerArray[0] . "\n";
-   // }
-    //else {
-      // Fill in logic to parse ID values
-    //}
+  //echo $urlToVisit . "\n";
+  $headerArray = get_headers($urlToVisit, 1, $context);
+  if(strpos($headerArray[0], '200') === false) { 
+    echo "Failed request for " . $urlToVisit . $headerArray[0] . "\n";
+  }
+  else {
+    $pageInfo = file_get_contents($urlToVisit, 1, $context);
+    $responseArray = explode(":",$pageInfo);
+    for($x = 0; $x <= count($responseArray); $x++) {
+      if($x < 20){
+        //echo $responseArray[$x] . "\n";
+      }
+      if($responseArray[$x] === 'id'){
+        echo "id: " . $responseArray[$x + 1] . "\n";
+      }
+    }
+  }
 };
 
 // Function verifies the updated date is later than created from the API
@@ -112,8 +121,6 @@ function verifyReposCount($publicReposCount, $reposURL, $context){
   else{
     echo "Respository Counter: Not Verified\n";
   }
-
-
 };
 
 verifyDate("2011-11-22T21:48:43Z","2020-04-21T23:30:09Z");
