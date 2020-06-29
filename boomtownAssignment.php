@@ -17,7 +17,7 @@ $context = stream_context_create(
 // Get information from API
 // if internest access is available use the below line, otherwise use the downloaded jsons
 // $file = file_get_contents("https://api.github.com/orgs/boomtownroi", false, $context);
-$mainFilePath = 'main.json';
+$mainFilePath = 'sub_json_files/main.json';
 $mainJSON = file_get_contents($mainFilePath);
 $mainArray = json_decode($mainJSON, true);
 //var_dump($mainArray);
@@ -40,25 +40,25 @@ foreach ($mainArray as $mainValue) {
 //var_dump($urlArray);
 
 // Check the status of a request for each URL
-//foreach ($urlArray as $urlToVisit) {
+/* foreach ($urlArray as $urlToVisit) {
   //echo $urlToVisit . "\n";
-  /* $headerArray = get_headers($urlToVisit, 1, $context);
+  $headerArray = get_headers($urlToVisit, 1, $context);
   if(strpos($headerArray[0], '200') === false) { 
-    echo "Failed request for " . $urlToVisit . $headerArray[0] . "\n";
+    echo "URL: " . $urlToVisit . "\n";
+    echo "Failed request for " . $urlToVisit . "\n";
+    echo $headerArray[0] . "\n";
   }
   else {
     $pageInfo = file_get_contents($urlToVisit, 1, $context);
-    $responseArray = explode(":",$pageInfo);
-    for($x = 0; $x <= count($responseArray); $x++) {
-      if($x < 20){
-        //echo $responseArray[$x] . "\n";
-      }
-      if($responseArray[$x] === 'id'){
-        echo "id: " . $responseArray[$x + 1] . "\n";
+    $subJSONObj = json_decode($pageInfo);
+    echo "URL: " . $urlToVisit . "\n";
+    foreach($subJSONObj as $key => $val) {
+      if($key === "id"){
+        echo $key . ': ' . $val . "\n";
       }
     }
-  } */
-//};
+  }
+}; */
 
 $jsonFileDir = array_diff(scandir('sub_json_files/'), array('..', '.'));
 foreach($jsonFileDir as $subJSONFile) {
@@ -66,8 +66,17 @@ foreach($jsonFileDir as $subJSONFile) {
   $subJSON = file_get_contents('sub_json_files/' . $subJSONFile);
   $subJSONObj = json_decode($subJSON);
   echo "File name: " . $subJSONFile . "\n";
-  foreach($subJSONObj as $row) {
-    foreach($row as $key => $val) {
+  if($subJSONFile !== 'main.json'){
+    foreach($subJSONObj as $row) {
+      foreach($row as $key => $val) {
+        if($key === "id"){
+          echo $key . ': ' . $val . "\n";
+        }
+      }
+    }
+  }
+  else{
+    foreach($subJSONObj as $key => $val) {
       if($key === "id"){
         echo $key . ': ' . $val . "\n";
       }
