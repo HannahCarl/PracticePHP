@@ -14,8 +14,8 @@ $context = stream_context_create(
   )
 );
 
-// Pull contents from API
-//$file = file_get_contents("https://api.github.com/orgs/boomtownroi", false, $context);
+// Get information from API
+// $file = file_get_contents("https://api.github.com/orgs/boomtownroi", false, $context);
 $apiContents = 
   '"login": "BoomTownROI",
   "id": 1214096,
@@ -65,7 +65,7 @@ foreach ($apiArray as $apiValue) {
       $urlArray[] = $apiValue; 
     }
   }
-}
+};
 
 // Check the status of a request for each URL
 foreach ($urlArray as $urlToVisit) {
@@ -77,5 +77,45 @@ foreach ($urlArray as $urlToVisit) {
     //else {
       // Fill in logic to parse ID values
     //}
-}
+};
+
+// Function verifies the updated date is later than created from the API
+function verifyDate($createdAt, $updatedAt){
+  $createdTime = new DateTime($createdAt);
+  $updatedTime = new DateTime($updatedAt);
+
+  if($updatedTime > $createdTime){
+    echo "Updated time of " . $updatedAt . " is later than the created time of " . $createdAt . "\n";
+  }
+  else{
+    echo "Failure: Updated time was not later than the created time\n";
+  }
+};
+
+// Function verifies repository count
+function verifyReposCount($publicReposCount, $reposURL, $context){
+  $pageNumber = 1;
+  $urlRepoCount = 0;
+
+
+  while(($urlRepoCount < $publicReposCount) && ($pageNumber < 5)) {
+    $reposArray = array();
+    $repoURLInfo = file_get_contents($reposURL . "?page=" . $pageNumber, false, $context);
+    $urlRepoCount += substr_count($repoURLInfo, "full_name");
+    $pageNumber += 1;
+  }
+
+  if($urlRepoCount === $publicReposCount){
+    echo "Repository Counter: Verified\n";
+    echo "Repository Count: " . $urlRepoCount . "\n";
+  }
+  else{
+    echo "Respository Counter: Not Verified\n";
+  }
+
+
+};
+
+verifyDate("2011-11-22T21:48:43Z","2020-04-21T23:30:09Z");
+verifyReposCount(41,"https://api.github.com/orgs/BoomTownROI/repos", $context);
 ?>
